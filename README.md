@@ -102,12 +102,10 @@ Overwrite the logrotate file:
 Since we have changed the file, the new hash will not match what what is expected:
 
 	cat /var/www/html/admin/modules/ucp/module.sig | grep logrotate
-	hooks/logrotate = a8ed4f168fa04f0ff884079ad214e854004b9a5511d26c6c9f6080daaf590781
 
 Fortunately for us, we've got write permissions for this file:
 
 	ls -l /var/www/html/admin/modules/ucp/module.sig
-	-rw-rw-r--. 1 asterisk asterisk 249099 Nov  2  2023 /var/www/html/admin/modules/ucp/module.sig
 
 
 Evaluate the new hash:
