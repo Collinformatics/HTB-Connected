@@ -58,20 +58,22 @@ Once we're in the system lets get the user flag:
 
 # Privilege Escalation:
 
+After looking around there's interesting files in the icron directory:
 
-DESCRIPTION:
-	The inotify cron daemon (incrond) is a daemon which monitors filesystem events and executes commands defined in system and user tables.
+	$ cat /etc/incron.d/sysadmin
+	/var/spool/asterisk/incron IN_MODIFY,IN_ATTRIB,IN_CLOSE_WRITE /usr/bin/sysadmin_manager $#
 
-incron:
+	$ file /usr/bin/sysadmin_manager
+	/usr/bin/sysadmin_manager: PHP script, ASCII text executable
 
-$ cat /etc/incron.d/sysadmin
-/var/spool/asterisk/incron IN_MODIFY,IN_ATTRIB,IN_CLOSE_WRITE /usr/bin/sysadmin_manager
+	$ ls -l /usr/bin/sysadmin_manager
+	-rwxr-xr-x. 1 root root 6403 Apr 15  2021 /usr/bin/sysadmin_manager
 
-$ file /var/spool/asterisk/incron
-/var/spool/asterisk/incron: directory
+	$ file /var/spool/asterisk/incron
+	/var/spool/asterisk/incron: directory
 
-$ file /usr/bin/sysadmin_manager
-/usr/bin/sysadmin_manager: PHP script, ASCII text executable
+
+
 
 
 The Watcher:
