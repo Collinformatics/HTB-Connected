@@ -28,7 +28,7 @@ We'll start with an nmap scan:
 	|_Not valid after:  2026-11-30T14:07:27
 
 
-As we can see, there is a service running on port 80, so lets add the ip to the hosts file for the resolver:
+As we can see, there is a service running on port 80, lets add the ip to the hosts file:
 
 	echo '10.129.245.100 connected.htb' | sudo tee -a /etc/hosts
 
