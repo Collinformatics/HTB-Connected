@@ -58,7 +58,7 @@ Once we're in the system lets get the user flag:
 
 # Privilege Escalation:
 
-After looking around there's interesting files in the icron directory:
+After looking around there's interesting files in the incron directory:
 
 	cat /etc/incron.d/sysadmin
 	/var/spool/asterisk/incron IN_MODIFY,IN_ATTRIB,IN_CLOSE_WRITE /usr/bin/sysadmin_manager $#
