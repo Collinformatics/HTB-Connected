@@ -3,30 +3,32 @@
 
 # Recon:
 
-$ nmap 10.129.245.100 -sV -sC
-Starting Nmap 7.99 ( https://nmap.org ) at 2026-07-30 19:18 -0500
-Nmap scan report for 10.129.245.100
-Host is up (0.081s latency).
-Not shown: 997 filtered tcp ports (no-response)
-PORT    STATE SERVICE VERSION
-22/tcp  open  ssh     OpenSSH 7.4 (protocol 2.0)
-| ssh-hostkey: 
-|   2048 4e:60:38:6f:e7:78:6c:ca:58:62:a1:f1:56:ae:8d:30 (RSA)
-|   256 12:41:55:26:9d:ad:3d:e8:bf:4e:31:aa:d7:d1:a5:d2 (ECDSA)
-|_  256 8e:b6:96:e0:21:83:5d:1d:ce:8d:e2:6a:dd:38:c6:75 (ED25519)
-80/tcp  open  http    Apache httpd 2.4.6 ((CentOS) OpenSSL/1.0.2k-fips PHP/7.4.16)
-|_http-server-header: Apache/2.4.6 (CentOS) OpenSSL/1.0.2k-fips PHP/7.4.16
-|_http-title: Did not follow redirect to http://connected.htb/
-443/tcp open  http    Apache httpd 2.4.6 ((CentOS) OpenSSL/1.0.2k-fips PHP/7.4.16)
-|_ssl-date: TLS randomness does not represent time
-|_http-server-header: Apache/2.4.6 (CentOS) OpenSSL/1.0.2k-fips PHP/7.4.16
-|_http-title: 400 Bad Request
-| ssl-cert: Subject: commonName=pbxconnect/organizationName=SomeOrganization/stateOrProvinceName=SomeState/countryName=--
-| Not valid before: 2025-11-30T14:07:27
-|_Not valid after:  2026-11-30T14:07:27
+We'll start with an nmap scan:
+
+	$ nmap 10.129.245.100 -sV -sC
+	Starting Nmap 7.99 ( https://nmap.org ) at 2026-07-30 19:18 -0500
+	Nmap scan report for 10.129.245.100
+	Host is up (0.081s latency).
+	Not shown: 997 filtered tcp ports (no-response)
+	PORT    STATE SERVICE VERSION
+	22/tcp  open  ssh     OpenSSH 7.4 (protocol 2.0)
+	| ssh-hostkey: 
+	|   2048 4e:60:38:6f:e7:78:6c:ca:58:62:a1:f1:56:ae:8d:30 (RSA)
+	|   256 12:41:55:26:9d:ad:3d:e8:bf:4e:31:aa:d7:d1:a5:d2 (ECDSA)
+	|_  256 8e:b6:96:e0:21:83:5d:1d:ce:8d:e2:6a:dd:38:c6:75 (ED25519)
+	80/tcp  open  http    Apache httpd 2.4.6 ((CentOS) OpenSSL/1.0.2k-fips PHP/7.4.16)
+	|_http-server-header: Apache/2.4.6 (CentOS) OpenSSL/1.0.2k-fips PHP/7.4.16
+	|_http-title: Did not follow redirect to http://connected.htb/
+	443/tcp open  http    Apache httpd 2.4.6 ((CentOS) OpenSSL/1.0.2k-fips PHP/7.4.16)
+	|_ssl-date: TLS randomness does not represent time
+	|_http-server-header: Apache/2.4.6 (CentOS) OpenSSL/1.0.2k-fips PHP/7.4.16
+	|_http-title: 400 Bad Request
+	| ssl-cert: Subject: commonName=pbxconnect/organizationName=SomeOrganization/stateOrProvinceName=SomeState/countryName=--
+	| Not valid before: 2025-11-30T14:07:27
+	|_Not valid after:  2026-11-30T14:07:27
 
 
-Since weve got a website lets add the ip to the hosts file for the resolver:
+As we can see, there is a service running on port 80, so lets add the ip to the hosts file for the resolver:
 
 	$ echo '10.129.245.100 connected.htb' | sudo tee -a /etc/hosts
 
