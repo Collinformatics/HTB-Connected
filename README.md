@@ -72,99 +72,39 @@ After looking around there's interesting files in the icron directory:
 	$ file /var/spool/asterisk/incron
 	/var/spool/asterisk/incron: directory
 
+Essentially what this means is that the sysadmin file is watching the directory /var/spool/asterisk/incron for any changes. When a modification happens, the file is passed to sysadmin_manager which executes with root permissions. Which indicates a path to privilege escalation.
 
-
-
-
-The Watcher:
-- /var/spool/asterisk/incron
-
-	- incron watches this file for file changes in IN_MODIFY, IN_ATTRIB, IN_CLOSE_WRITE.
-
-
-	$ ls -ld /var/spool/asterisk/incron
-	drwxrwxr-x. 2 asterisk asterisk 6 Jul 31 02:53 /var/spool/asterisk/incron
-
-
-The Trigger:
-- /usr/bin/sysadmin_manager
-
-	- When a file changes, this runs a file as root. 
-
-	$ ls -l /usr/bin/sysadmin_manager
-	-rwxr-xr-x. 1 root root 6403 Apr 15  2021 /usr/bin/sysadmin_manager
-
-
-
-============================================================================
-
-
-
-$ cat /etc/incron.d/local
-/usr/local/asterisk/incron IN_CLOSE_WRITE /usr/bin/sysadmin_manager --local $#
-
-When a file is created/modified in: /usr/local/asterisk/incron
-
-Incron detects the IN_CLOSE_WRITE event and triggers the rule: /usr/bin/sysadmin_manager --local $#
-- The $# is replaced with the filename that triggered the event
-
-
-	$ ls -l /usr/bin/sysadmin_manager
-	-rwxr-xr-x. 1 root root 6403 Apr 15  2021 /usr/bin/sysadmin_manager
-
-sysadmin_manager will execute the script as the root user!
-
-
-
-Move to the dir:
-
-$ cd /usr/local/asterisk/incron
-
-
-
-============================================================================
-
-Event Trigger:
-	When you create a file like ucp.logrotate in /var/spool/asterisk/incron, the incron daemon executes sysadmin_manager with that filename.
-
-Parsing: 
-	sysadmin_manager parses the filename into two parts:
+The sysadmin_manager parses the filename into two parts:
 	- Module: ucp (User Control Panel)
 	- Hook: logrotate
 
-Execution:
-	The manager locates the corresponding script at /var/www/html/admin/modules/ucp/hooks/logrotate and executes it.
-
-Privilege Escalation:
-	Since sysadmin_manager runs as root, any code inside that hook script executes with root privileges.
+Then locates the corresponding script at /var/www/html/admin/modules/ucp/hooks/ and executes it.
 
 
-Identify writable hooks:
+Lets see if there are writable hooks:
 
 	$ ls -la /var/www/html/admin/modules/ucp/hooks/
 	-rw-r--r--   1 asterisk asterisk 12288 Jul 31 04:50 .logrotate.swp
 	-rwxr-xr-x.  1 asterisk asterisk    54 Jul 31 05:12 logrotate
 
-
-$ ls -l /var/www/html/admin/modules/ucp/hooks/logrotate
--rwxr-xr-x. 1 asterisk asterisk 473 Nov  2  2023 /var/www/html/admin/modules/ucp/hooks/logrotate
+- We've got write permissions for logrotate.
 
 
-Check used ports:
+Were going to write a reverse shell to logrotate, but first check which ports are currently in use:
 
-ss -ntlp
-State      Recv-Q Send-Q Local Address:Port               Peer Address:Port
-LISTEN     0      50     127.0.0.1:3306                     *:*
-LISTEN     0      511    127.0.0.1:6379                     *:*
-LISTEN     0      10     127.0.0.1:5038                     *:*           users:(("asterisk",pid=1315,fd=10))
-LISTEN     0      128          *:22                       *:*
-LISTEN     0      100    127.0.0.1:25                       *:*
-LISTEN     0      128    127.0.0.1:4000                     *:*
-LISTEN     0      128    127.0.0.1:27017                    *:*
-LISTEN     0      511       [::]:80                    [::]:*
-LISTEN     0      128       [::]:22                    [::]:*
-LISTEN     0      100      [::1]:25                    [::]:*
-LISTEN     0      511       [::]:443                   [::]:*
+	$ ss -ntlp
+	State      Recv-Q Send-Q Local Address:Port               Peer Address:Port
+	LISTEN     0      50     127.0.0.1:3306                     *:*
+	LISTEN     0      511    127.0.0.1:6379                     *:*
+	LISTEN     0      10     127.0.0.1:5038                     *:*           users:(("asterisk",pid=1315,fd=10))
+	LISTEN     0      128          *:22                       *:*
+	LISTEN     0      100    127.0.0.1:25                       *:*
+	LISTEN     0      128    127.0.0.1:4000                     *:*
+	LISTEN     0      128    127.0.0.1:27017                    *:*
+	LISTEN     0      511       [::]:80                    [::]:*
+	LISTEN     0      128       [::]:22                    [::]:*
+	LISTEN     0      100      [::1]:25                    [::]:*
+	LISTEN     0      511       [::]:443                   [::]:*
 
 
 
@@ -201,6 +141,7 @@ Verify that the hashes match:
 
 	$ cat /var/www/html/admin/modules/ucp/module.sig | grep logrotate
 	$ echo $hash
+
 
 
 Setup listener 
