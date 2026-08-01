@@ -1,6 +1,14 @@
 # Hack The Box Labs: Connected
 
-This CTF involves a CVE for FreePBX, and a incron privilege escalation.
+This CTF involves a FreePBX CVE, and a Inotify Cron (incron) privilege escalation.
+
+CVE-2025-57819 results from insufficient data sanitization that allows for remote code execution.
+
+Incron is used to monitor filesystem events, and triggers code execution when changes are detected.
+
+https://nvd.nist.gov/vuln/detail/CVE-2025-57819
+
+https://www.man7.org/linux/man-pages/man7/inotify.7.html
 
 
 # Recon:
