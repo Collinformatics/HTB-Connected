@@ -1,5 +1,7 @@
 # Hack The Box Labs: Connected
 
+This CTF involves a CVE for FreePBX, and a incron privilege escalation.
+
 
 # Recon:
 
