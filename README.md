@@ -138,12 +138,12 @@ Verify that the hashes match:
 	$ echo $hash
 
 
-Setup listener on 
+Setup listener on your machine:
 
 	$ nc -nvlp 5555
 
 
-Now we can trigger the logrotate hook:
+Now we can trigger the logrotate hook, which will con:
 
 	$ touch /var/spool/asterisk/incron/ucp.logrotate
 
